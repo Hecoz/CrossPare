@@ -11,7 +11,7 @@
  <trainer name="WekaTraining" param="NET weka.classifiers.functions.RBFNetwork -CVPARAM W 0.1 10.0 3.0 L 2.0 18.0 3.0" />
  <trainer name="WekaTraining" param="SVM weka.classifiers.functions.SMO -K weka.classifiers.functions.supportVector.RBFKernel" />
  <setwisepreprocessor name="LogarithmTransform" param="" />
- <setwiseselector name="LACE2" param="0.4" />
+ <!-- <setwiseselector name="LACE2" param="0.4" /> -->
  <pointwiseselector name="TurhanFilter" param="1" />
  <eval name="NormalWekaEvaluation" param="" />
  <repetitions number="10" />

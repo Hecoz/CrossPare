@@ -32,10 +32,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -160,151 +157,154 @@ public abstract class SclModelAbstractCrossProjectExperiment implements IExecuti
 
         // sort versions
         Collections.sort(versions);
+        for(int time = 0;time < 10;time++) {
 
-        for(int fold = 0;fold < 10;fold++) {
-
-            SetUniqueList<Instances> traindataSet = SetUniqueList.setUniqueList(new LinkedList<Instances>());
-
-            for (SoftwareVersion version : versions) {
-                //Setup traindata
-                traindataSet.add(version.getInstances().testCV(10, fold));
+            Random rand = new Random(time + 1);
+            for(int i = 0;i < versions.size();i++){
+                 versions.get(i).getInstances().randomize(rand);
             }
 
-            for (SoftwareVersion version : versions) {
+            for (int fold = 0; fold < 10; fold++) {
 
-                // Setup testdata
-                Instances testdata = version.getInstances().trainCV(10, fold);
-                List<Double> efforts = getEfforts(testdata);
-                List<Double> numBugs = getNumBugs(testdata);
+                SetUniqueList<Instances> traindataSet = SetUniqueList.setUniqueList(new LinkedList<Instances>());
 
-                for (ISetWiseProcessingStrategy processor : this.config.getSetWisePreprocessors()) {
-                    Console.traceln(Level.FINE, String
-                            .format("[%s] [%02d/%02d] %s: applying setwise preprocessor %s",
-                                    this.config.getExperimentName(), versionCount, testVersionCount,
-                                    version.getVersion(), processor.getClass().getName()));
-                    processor.apply(testdata, traindataSet);
-                }
-                for (ISetWiseDataselectionStrategy dataselector : this.config
-                        .getSetWiseSelectors())
-                {
-                    Console
-                            .traceln(Level.FINE,
-                                    String.format("[%s] [%02d/%02d] %s: applying setwise selection %s",
-                                            this.config.getExperimentName(), versionCount,
-                                            testVersionCount, version.getVersion(),
-                                            dataselector.getClass().getName()));
-                    dataselector.apply(testdata, traindataSet);
-                }
-                for (ISetWiseProcessingStrategy processor : this.config
-                        .getSetWisePostprocessors())
-                {
-                    Console.traceln(Level.FINE, String
-                            .format("[%s] [%02d/%02d] %s: applying setwise postprocessor %s",
-                                    this.config.getExperimentName(), versionCount, testVersionCount,
-                                    version.getVersion(), processor.getClass().getName()));
-                    processor.apply(testdata, traindataSet);
-                }
-                for (ISetWiseTrainingStrategy setwiseTrainer : this.config.getSetWiseTrainers()) {
-                    Console
-                            .traceln(Level.FINE,
-                                    String.format("[%s] [%02d/%02d] %s: applying setwise trainer %s",
-                                            this.config.getExperimentName(), versionCount,
-                                            testVersionCount, version.getVersion(),
-                                            setwiseTrainer.getName()));
-                    setwiseTrainer.apply(traindataSet);
-                }
-                for (ISetWiseTestdataAwareTrainingStrategy setwiseTestdataAwareTrainer : this.config
-                        .getSetWiseTestdataAwareTrainers())
-                {
-                    Console.traceln(Level.FINE, String
-                            .format("[%s] [%02d/%02d] %s: applying testdata aware setwise trainer %s",
-                                    this.config.getExperimentName(), versionCount, testVersionCount,
-                                    version.getVersion(), setwiseTestdataAwareTrainer.getName()));
-                    setwiseTestdataAwareTrainer.apply(traindataSet, testdata);
+                for (SoftwareVersion version : versions) {
+                    //Setup traindata
+                    traindataSet.add(version.getInstances().testCV(10, fold));
                 }
 
-                Instances traindata = makeSingleTrainingSet(traindataSet);
+                for (SoftwareVersion version : versions) {
 
-                //model building
-                for (IProcessesingStrategy processor : this.config.getPreProcessors()) {
-                    Console.traceln(Level.FINE,
-                            String.format("[%s] [%02d/%02d] %s: applying preprocessor %s",
-                                    this.config.getExperimentName(), versionCount,
-                                    testVersionCount, version.getVersion(),
-                                    processor.getClass().getName()));
-                    processor.apply(testdata, traindata);
-                }
-                for (IPointWiseDataselectionStrategy dataselector : this.config
-                        .getPointWiseSelectors())
-                {
-                    Console.traceln(Level.FINE, String
-                            .format("[%s] [%02d/%02d] %s: applying pointwise selection %s",
-                                    this.config.getExperimentName(), versionCount, testVersionCount,
-                                    version.getVersion(), dataselector.getClass().getName()));
-                    traindata = dataselector.apply(testdata, traindata);
-                }
-                for (IProcessesingStrategy processor : this.config.getPostProcessors()) {
-                    Console.traceln(Level.FINE, String
-                            .format("[%s] [%02d/%02d] %s: applying setwise postprocessor %s",
-                                    this.config.getExperimentName(), versionCount, testVersionCount,
-                                    version.getVersion(), processor.getClass().getName()));
-                    processor.apply(testdata, traindata);
-                }
-                for (ITrainingStrategy trainer : this.config.getTrainers()) {
-                    Console.traceln(Level.FINE,
-                            String.format("[%s] [%02d/%02d] %s: applying trainer %s",
-                                    this.config.getExperimentName(), versionCount,
-                                    testVersionCount, version.getVersion(),
-                                    trainer.getName()));
-                    trainer.apply(traindata);
-                }
-                for (ITestAwareTrainingStrategy trainer : this.config.getTestAwareTrainers()) {
-                    Console.traceln(Level.FINE,
-                            String.format("[%s] [%02d/%02d] %s: applying trainer %s",
-                                    this.config.getExperimentName(), versionCount,
-                                    testVersionCount, version.getVersion(),
-                                    trainer.getName()));
-                    trainer.apply(testdata, traindata);
-                }
+                    // Setup testdata
+                    Instances testdata = version.getInstances().trainCV(10, fold);
+                    List<Double> efforts = getEfforts(testdata);
+                    List<Double> numBugs = getNumBugs(testdata);
 
-                File resultsDir = new File(this.config.getResultsPath());
-                if (!resultsDir.exists()) {
-                    resultsDir.mkdir();
-                }
-                for (IEvaluationStrategy evaluator : this.config.getEvaluators()) {
-
-                    Console.traceln(Level.FINE, String.format("[%s] [%02d/%02d] %s: applying evaluator %s",
-                            this.config.getExperimentName(), versionCount,
-                            testVersionCount, version.getVersion(),
-                            evaluator.getClass().getName()));
-
-                    List<ITrainer> allTrainers = new LinkedList<>();
-
-                    for (ISetWiseTrainingStrategy setwiseTrainer : this.config.getSetWiseTrainers()) {
-                        allTrainers.add(setwiseTrainer);
+                    for (ISetWiseProcessingStrategy processor : this.config.getSetWisePreprocessors()) {
+                        Console.traceln(Level.FINE, String
+                                .format("[%s] [%02d/%02d] %s: applying setwise preprocessor %s",
+                                        this.config.getExperimentName(), versionCount, testVersionCount,
+                                        version.getVersion(), processor.getClass().getName()));
+                        processor.apply(testdata, traindataSet);
                     }
-                    for (ISetWiseTestdataAwareTrainingStrategy setwiseTestdataAwareTrainer : this.config.getSetWiseTestdataAwareTrainers()) {
-                        allTrainers.add(setwiseTestdataAwareTrainer);
+                    for (ISetWiseDataselectionStrategy dataselector : this.config
+                            .getSetWiseSelectors()) {
+                        Console
+                                .traceln(Level.FINE,
+                                        String.format("[%s] [%02d/%02d] %s: applying setwise selection %s",
+                                                this.config.getExperimentName(), versionCount,
+                                                testVersionCount, version.getVersion(),
+                                                dataselector.getClass().getName()));
+                        dataselector.apply(testdata, traindataSet);
+                    }
+                    for (ISetWiseProcessingStrategy processor : this.config
+                            .getSetWisePostprocessors()) {
+                        Console.traceln(Level.FINE, String
+                                .format("[%s] [%02d/%02d] %s: applying setwise postprocessor %s",
+                                        this.config.getExperimentName(), versionCount, testVersionCount,
+                                        version.getVersion(), processor.getClass().getName()));
+                        processor.apply(testdata, traindataSet);
+                    }
+                    for (ISetWiseTrainingStrategy setwiseTrainer : this.config.getSetWiseTrainers()) {
+                        Console
+                                .traceln(Level.FINE,
+                                        String.format("[%s] [%02d/%02d] %s: applying setwise trainer %s",
+                                                this.config.getExperimentName(), versionCount,
+                                                testVersionCount, version.getVersion(),
+                                                setwiseTrainer.getName()));
+                        setwiseTrainer.apply(traindataSet);
+                    }
+                    for (ISetWiseTestdataAwareTrainingStrategy setwiseTestdataAwareTrainer : this.config
+                            .getSetWiseTestdataAwareTrainers()) {
+                        Console.traceln(Level.FINE, String
+                                .format("[%s] [%02d/%02d] %s: applying testdata aware setwise trainer %s",
+                                        this.config.getExperimentName(), versionCount, testVersionCount,
+                                        version.getVersion(), setwiseTestdataAwareTrainer.getName()));
+                        setwiseTestdataAwareTrainer.apply(traindataSet, testdata);
+                    }
+
+                    Instances traindata = makeSingleTrainingSet(traindataSet);
+
+                    //model building
+                    for (IProcessesingStrategy processor : this.config.getPreProcessors()) {
+                        Console.traceln(Level.FINE,
+                                String.format("[%s] [%02d/%02d] %s: applying preprocessor %s",
+                                        this.config.getExperimentName(), versionCount,
+                                        testVersionCount, version.getVersion(),
+                                        processor.getClass().getName()));
+                        processor.apply(testdata, traindata);
+                    }
+                    for (IPointWiseDataselectionStrategy dataselector : this.config
+                            .getPointWiseSelectors()) {
+                        Console.traceln(Level.FINE, String
+                                .format("[%s] [%02d/%02d] %s: applying pointwise selection %s",
+                                        this.config.getExperimentName(), versionCount, testVersionCount,
+                                        version.getVersion(), dataselector.getClass().getName()));
+                        traindata = dataselector.apply(testdata, traindata);
+                    }
+                    for (IProcessesingStrategy processor : this.config.getPostProcessors()) {
+                        Console.traceln(Level.FINE, String
+                                .format("[%s] [%02d/%02d] %s: applying setwise postprocessor %s",
+                                        this.config.getExperimentName(), versionCount, testVersionCount,
+                                        version.getVersion(), processor.getClass().getName()));
+                        processor.apply(testdata, traindata);
                     }
                     for (ITrainingStrategy trainer : this.config.getTrainers()) {
-                        allTrainers.add(trainer);
+                        Console.traceln(Level.FINE,
+                                String.format("[%s] [%02d/%02d] %s: applying trainer %s",
+                                        this.config.getExperimentName(), versionCount,
+                                        testVersionCount, version.getVersion(),
+                                        trainer.getName()));
+                        trainer.apply(traindata);
                     }
                     for (ITestAwareTrainingStrategy trainer : this.config.getTestAwareTrainers()) {
-                        allTrainers.add(trainer);
+                        Console.traceln(Level.FINE,
+                                String.format("[%s] [%02d/%02d] %s: applying trainer %s",
+                                        this.config.getExperimentName(), versionCount,
+                                        testVersionCount, version.getVersion(),
+                                        trainer.getName()));
+                        trainer.apply(testdata, traindata);
                     }
-                    if (writeHeader) {
-                        evaluator.setParameter(this.config.getResultsPath() + "/" +
-                                this.config.getExperimentName() + ".csv");
-                    }
-                    evaluator.apply(testdata, traindata, allTrainers, efforts, numBugs, writeHeader, this.config.getResultStorages());
-                    writeHeader = false;
-                }
-                Console.traceln(Level.INFO,
-                        String.format("[%s] [%02d/%02d] %s: finished",
-                                this.config.getExperimentName(), versionCount,
-                                testVersionCount, version.getVersion()));
-                versionCount++;
 
+                    File resultsDir = new File(this.config.getResultsPath());
+                    if (!resultsDir.exists()) {
+                        resultsDir.mkdir();
+                    }
+                    for (IEvaluationStrategy evaluator : this.config.getEvaluators()) {
+
+                        Console.traceln(Level.FINE, String.format("[%s] [%02d/%02d] %s: applying evaluator %s",
+                                this.config.getExperimentName(), versionCount,
+                                testVersionCount, version.getVersion(),
+                                evaluator.getClass().getName()));
+
+                        List<ITrainer> allTrainers = new LinkedList<>();
+
+                        for (ISetWiseTrainingStrategy setwiseTrainer : this.config.getSetWiseTrainers()) {
+                            allTrainers.add(setwiseTrainer);
+                        }
+                        for (ISetWiseTestdataAwareTrainingStrategy setwiseTestdataAwareTrainer : this.config.getSetWiseTestdataAwareTrainers()) {
+                            allTrainers.add(setwiseTestdataAwareTrainer);
+                        }
+                        for (ITrainingStrategy trainer : this.config.getTrainers()) {
+                            allTrainers.add(trainer);
+                        }
+                        for (ITestAwareTrainingStrategy trainer : this.config.getTestAwareTrainers()) {
+                            allTrainers.add(trainer);
+                        }
+                        if (writeHeader) {
+                            evaluator.setParameter(this.config.getResultsPath() + "/" +
+                                    this.config.getExperimentName() + ".csv");
+                        }
+                        evaluator.apply(testdata, traindata, allTrainers, efforts, numBugs, writeHeader, this.config.getResultStorages());
+                        writeHeader = false;
+                    }
+                    Console.traceln(Level.INFO,
+                            String.format("[%s] [%02d/%02d] %s: finished",
+                                    this.config.getExperimentName(), versionCount,
+                                    testVersionCount, version.getVersion()));
+                    versionCount++;
+
+                }
             }
         }
     }

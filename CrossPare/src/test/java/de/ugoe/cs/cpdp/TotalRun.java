@@ -19,32 +19,33 @@ import java.util.logging.Level;
  * 
  * @author Steffen Herbold
  */
-public class Test {
+public class TotalRun {
 
     public static void main(String[] args) {
+
+
+        String filename;
+        String[] strategys = {"Nam15","Peters15","Turhan09"};
+        String[] projects  = {"AEEEM-Mask","MORPH-Mask","RELINK-Mask","SOFTLAB-Mask"};
+
+        for(String strategy : strategys){
+
+            for(String project : projects){
+
+                filename = "data/benchmark/config/" + project + "-" + strategy + ".xml";
+                run(filename);
+            }
+        }
+
+    }
+
+    public static void run(String arg){
+
         new TextConsole(Level.FINE);
         final int concurrentThreads = Runtime.getRuntime().availableProcessors();
         Console.traceln(Level.FINE, "exuection max " + concurrentThreads + " at the same time");
         final ExecutorService threadPool = Executors.newFixedThreadPool(concurrentThreads);
 
-        //String arg = "data/benchmark/config/AEEEM-Mask.xml";
-        //String arg = "data/benchmark/config/AEEEM-Turhan09.xml";
-        //AEEEM
-        //String arg = "data/benchmark/config/AEEEM-Mask-Nam15.xml";
-        //String arg = "data/benchmark/config/AEEEM-Mask-Peters15.xml";
-        //String arg = "data/benchmark/config/AEEEM-Mask-Turhan09.xml";
-        //MORPH
-        //String arg = "data/benchmark/config/MORPH-Mask-Nam15.xml";
-        String arg = "data/benchmark/config/MORPH-Mask-Peters15.xml";
-        //String arg = "data/benchmark/config/MORPH-Mask-Turhan09.xml";
-        //RELINK
-        //String arg = "data/benchmark/config/RELINK-Mask-Nam15.xml";
-        //String arg = "data/benchmark/config/RELINK-Mask-Peters15.xml";
-        //String arg = "data/benchmark/config/RELINK-Mask-Turhan09.xml";
-        //SOFTLAB
-        //String arg = "data/benchmark/config/SOFTLAB-Mask-Nam15.xml";
-        //String arg = "data/benchmark/config/SOFTLAB-Mask-Peters15.xml";
-        //String arg = "data/benchmark/config/SOFTLAB-Mask-Turhan09.xml";
         File file = new File(arg);
         if (file.isFile()) {
 
@@ -64,6 +65,7 @@ public class Test {
             e.printStackTrace();
         }
     }
+
 
     /**
      * Creates the config and starts the corresponding experiment
