@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Random;
 
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import org.apache.commons.collections4.list.SetUniqueList;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.apache.commons.math3.util.MathArrays;
@@ -76,6 +77,7 @@ public class LACE2 implements ISetWiseDataselectionStrategy {
         double minDist = Double.MIN_VALUE;
 
         for (Instances traindata : traindataCopy) {
+            System.out.println(traindata.size());
             Instances cliffedData = cliff.applyCLIFF(traindata);
             if (minDist == Double.MIN_VALUE) {
                 // determine distance for leader-follower algorithm
