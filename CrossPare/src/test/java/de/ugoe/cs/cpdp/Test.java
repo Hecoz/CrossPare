@@ -28,7 +28,10 @@ public class Test {
         final ExecutorService threadPool = Executors.newFixedThreadPool(concurrentThreads);
 
         //String arg = "data/benchmark/config/AEEEM-Mask.xml";
-        String arg = "data/benchmark/config/AEEEM-Turhan09.xml";
+        //String arg = "data/benchmark/config/AEEEM-Turhan09.xml";
+        //String arg = "data/benchmark/config/AEEEM-Mask-Nam15.xml";
+        //String arg = "data/benchmark/config/AEEEM-Mask-Peters15.xml";
+        String arg = "data/benchmark/config/AEEEM-Mask-Turhan09.xml";
         File file = new File(arg);
         if (file.isFile()) {
 
