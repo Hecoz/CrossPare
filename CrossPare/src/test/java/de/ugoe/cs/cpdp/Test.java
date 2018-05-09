@@ -35,7 +35,7 @@ public class Test {
         //String arg = "data/benchmark/config/AEEEM-Mask-Turhan09.xml";
         //MORPH
         //String arg = "data/benchmark/config/MORPH-Mask-Nam15.xml";
-        //String arg = "data/benchmark/config/MORPH-Mask-Peters15.xml";
+        String arg = "data/benchmark/config/MORPH-Mask-Peters15.xml";
         //String arg = "data/benchmark/config/MORPH-Mask-Turhan09.xml";
         //RELINK
         //String arg = "data/benchmark/config/RELINK-Mask-Nam15.xml";
@@ -44,7 +44,7 @@ public class Test {
         //SOFTLAB
         //String arg = "data/benchmark/config/SOFTLAB-Mask-Nam15.xml";
         //String arg = "data/benchmark/config/SOFTLAB-Mask-Peters15.xml";
-        String arg = "data/benchmark/config/SOFTLAB-Mask-Turhan09.xml";
+        //String arg = "data/benchmark/config/SOFTLAB-Mask-Turhan09.xml";
         File file = new File(arg);
         if (file.isFile()) {
 
