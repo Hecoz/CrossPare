@@ -298,15 +298,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="weka-monolithic.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/weka-monolithic.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library name="javagd-0.6.1.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/javagd-0.6.1.jar!/" />
@@ -391,6 +382,34 @@
       <library name="rengine-weka-inject-classes.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/rengine-weka-inject-classes.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/weka-monolithic.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="LibLINEAR-1.9.7" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/liblinear-1.51-with-deps.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/liblinear-1.95.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

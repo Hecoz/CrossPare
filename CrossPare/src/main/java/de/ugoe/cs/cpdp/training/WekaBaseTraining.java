@@ -24,6 +24,9 @@ import weka.classifiers.Classifier;
 import weka.classifiers.bayes.BayesNet;
 import weka.classifiers.meta.CVParameterSelection;
 import weka.classifiers.meta.Vote;
+import weka.classifiers.functions.LibLINEAR;
+import de.bwaldvogel.liblinear.*;
+
 
 /**
  * <p>

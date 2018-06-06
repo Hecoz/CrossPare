@@ -122,7 +122,7 @@ public abstract class AbstractWekaEvaluation implements IEvaluationStrategy {
         }
 
         if (writeHeader) {
-            this.output.append("version,size_test,size_training");
+            this.output.append("trainVersion,testVersion,size_test,size_training");
             for (ITrainer trainer : trainers) {
                 this.output.append(",error_" + ((IWekaCompatibleTrainer) trainer).getName());
                 this.output.append(",recall_" + ((IWekaCompatibleTrainer) trainer).getName());
@@ -144,7 +144,8 @@ public abstract class AbstractWekaEvaluation implements IEvaluationStrategy {
             this.output.append(StringTools.ENDLINE);
         }
 
-        this.output.append(productName);
+        this.output.append(traindata.relationName());
+        this.output.append("," + productName);
         this.output.append("," + testdata.numInstances());
         this.output.append("," + traindata.numInstances());
 

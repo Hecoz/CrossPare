@@ -135,6 +135,7 @@ public abstract class SclModelAbstractCrossProjectExperiment implements IExecuti
     @SuppressWarnings("boxing")
     @Override
     public void run() {
+
         final List<SoftwareVersion> versions = new LinkedList<>();
 
         for (IVersionLoader loader : this.config.getLoaders()) {
@@ -144,6 +145,7 @@ public abstract class SclModelAbstractCrossProjectExperiment implements IExecuti
         for (IVersionFilter filter : this.config.getVersionFilters()) {
             filter.apply(versions);
         }
+
         boolean writeHeader = true;
         int versionCount = 1;
         int testVersionCount = 0;
@@ -153,6 +155,7 @@ public abstract class SclModelAbstractCrossProjectExperiment implements IExecuti
                 testVersionCount++;
             }
         }
+
         testVersionCount*=10;
 
         // sort versions
@@ -160,9 +163,21 @@ public abstract class SclModelAbstractCrossProjectExperiment implements IExecuti
         for(int time = 0;time < 10;time++) {
 
             Random rand = new Random(time + 1);
+            SoftwareVersion vtmp;
+            Instances tmpInstance;
             for(int i = 0;i < versions.size();i++){
-                 versions.get(i).getInstances().randomize(rand);
+
+                vtmp = versions.get(i);
+                tmpInstance = vtmp.getInstances();
+                tmpInstance.randomize(rand);
+                List<Double> efforts = getEfforts(tmpInstance);
+                List<Double> numBugs = getNumBugs(tmpInstance);
+                SoftwareVersion newVersion = new SoftwareVersion(vtmp.getDataset(),vtmp.getProject(),vtmp.getVersion(),tmpInstance,efforts,numBugs);
+                versions.set(i,newVersion);
+
+                //versions.get(i).getInstances().randomize(rand);
             }
+
 
             for (int fold = 0; fold < 10; fold++) {
 
